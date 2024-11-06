@@ -51,7 +51,7 @@ jobs:
             PHP_VERSION=${{ matrix.php_version }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.FPM_NAME }}:${{ matrix.php_version }}
-            ${{ env.REGISTRY }}/${{ env.FPM_NAME }}:${{ matrix.php_version == '8.3' && 'latest' || '' }}
+            ${{ matrix.php_version == '8.3' && format('{0}/{1}:latest', env.REGISTRY, env.FPM_NAME) }}
 
     strategy:
       matrix:
@@ -95,7 +95,7 @@ jobs:
             PHP_VERSION=${{ matrix.php_version }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.XDEBUG_NAME }}:${{ matrix.php_version }}
-            ${{ env.REGISTRY }}/${{ env.XDEBUG_NAME }}:${{ matrix.php_version == '8.3' && 'latest' || '' }}
+            ${{ matrix.php_version == '8.3' && format('{0}/{1}:latest', env.REGISTRY, env.XDEBUG_NAME) }}
 
     strategy:
       matrix:
