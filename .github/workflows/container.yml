@@ -16,7 +16,7 @@ jobs:
   php:
     runs-on: ubuntu-latest
     concurrency:
-      group: php-${{ github.workflow }}-${{ github.ref }}
+      group: php-${{ github.workflow }}-${{ github.ref }}-${{ matrix.php_version }}
       cancel-in-progress: true
     permissions:
       contents: read
@@ -60,7 +60,7 @@ jobs:
   xdebug:
     runs-on: ubuntu-latest
     concurrency:
-      group: xdebug-${{ github.workflow }}-${{ github.ref }}
+      group: xdebug-${{ github.workflow }}-${{ github.ref }}-${{ matrix.php_version }}
       cancel-in-progress: true
     permissions:
       contents: read
