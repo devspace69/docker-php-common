@@ -38,26 +38,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.REPO_ACCESS_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.FPM_NAME }}
-          tags: |
-            latest
-
-      - name: Build and push Docker image
-        id: build-and-push
+      - name: Build and push Docker images
         uses: docker/build-push-action@5176d81f87c23d6fc96624dfdbcd9f3830bbe445
         with:
-          file: php.Dockerfile
           context: ./
+          file: php.Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=php-fpm
           cache-to: type=gha,mode=max,scope=php-fpm
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.FPM_NAME }}:${{ matrix.php_version }}
+            ${{ env.REGISTRY }}/${{ env.FPM_NAME }}:${{ matrix.php_version == '8.3' && 'latest' || '' }}
+
+    strategy:
+      matrix:
+        php_version: [8.0, 8.1, 8.2, 8.3]
 
   xdebug:
     runs-on: ubuntu-latest
@@ -84,23 +82,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.REPO_ACCESS_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.XDEBUG_NAME }}
-          tags: |
-            latest
-
-      - name: Build and push Docker image
-        id: build-and-push
+      - name: Build and push Docker images
         uses: docker/build-push-action@5176d81f87c23d6fc96624dfdbcd9f3830bbe445
         with:
-          file: php.xdebug.Dockerfile
           context: ./
+          file: php.xdebug.Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=php-fpm-xdebug
           cache-to: type=gha,mode=max,scope=php-fpm-xdebug
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.XDEBUG_NAME }}:${{ matrix.php_version }}
+            ${{ env.REGISTRY }}/${{ env.XDEBUG_NAME }}:${{ matrix.php_version == '8.3' && 'latest' || '' }}
+
+    strategy:
+      matrix:
+        php_version: [8.0, 8.1, 8.2, 8.3]
